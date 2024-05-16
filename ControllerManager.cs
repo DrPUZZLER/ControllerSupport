@@ -31,8 +31,10 @@ public class ControllerManager : MonoBehaviour {
         }
         if (selectionCurrentlyMade) {
             AC.KickStarter.cursorManager.cursorDisplay = AC.CursorDisplay.Never;
+            AC.KickStarter.playerCursor.ForceOffCursor = true;
         } else {
             AC.KickStarter.cursorManager.cursorDisplay = AC.CursorDisplay.Always;
+            AC.KickStarter.playerCursor.ForceOffCursor = false;
         }
     }
 
