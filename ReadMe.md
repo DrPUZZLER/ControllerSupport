@@ -7,7 +7,7 @@ Requires DOTween (free)
 Requires New Input System AND Old Inpust System (free)
 
 
-YT Tutorial:
+YT Tutorial: https://youtu.be/ixQlYXZMjH0
 
 Instructions:
 For each set of buttons you wish to cycle through, add a Controller Manager component to an empty game object.
