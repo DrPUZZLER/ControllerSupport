@@ -8,17 +8,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerInput))]
 public class ControllerManager : MonoBehaviour {
 
     PlayerInput input;
-    AccessibilityManager manager;
     bool selectionCurrentlyMade = false;
     [SerializeField] List<ControllerInteractableElement> buttonsToInteractWith;
     int buttonsCount;
-    int currentButton = 0;
+    [SerializeField] int currentButton = 0;
     void Start() {
         input = GetComponent<PlayerInput>();
-        manager = FindObjectOfType<AccessibilityManager>();
         buttonsCount = buttonsToInteractWith.Count - 1;
     }
 
@@ -42,28 +41,46 @@ public class ControllerManager : MonoBehaviour {
     bool CheckSelection() {
         if (selectionCurrentlyMade)
             return false;
-        buttonsToInteractWith[0].Select();
-        selectionCurrentlyMade = true;
+        
+        foreach (ControllerInteractableElement e in buttonsToInteractWith) {
+            if (e.isActiveAndEnabled) {
+                e.Select();
+                currentButton = buttonsToInteractWith.IndexOf(e);
+                selectionCurrentlyMade = true;
+                return true;
+            }
+        }
         return true;
     }
     public void OnLeft() {
         if (CheckSelection())
             return;
-        buttonsToInteractWith[currentButton].Deselect();
+        if (buttonsToInteractWith[currentButton].isActiveAndEnabled)
+            buttonsToInteractWith[currentButton].Deselect();
         currentButton --;
         if (currentButton < 0) 
             currentButton = buttonsCount;
-        buttonsToInteractWith[currentButton].Select();
+
+        if (buttonsToInteractWith[currentButton].isActiveAndEnabled)
+            buttonsToInteractWith[currentButton].Select();
+        else
+            OnLeft();
         
     }
     public void OnRight() {
         if (CheckSelection())
             return;
-        buttonsToInteractWith[currentButton].Deselect();
+        if (buttonsToInteractWith[currentButton].isActiveAndEnabled)
+            buttonsToInteractWith[currentButton].Deselect();
+
         currentButton ++;
         if (currentButton > buttonsCount) 
             currentButton = 0;
-        buttonsToInteractWith[currentButton].Select();
+        
+        if (buttonsToInteractWith[currentButton].isActiveAndEnabled)
+            buttonsToInteractWith[currentButton].Select();
+        else
+            OnRight();
     }
     public void OnSelect() {
         if (CheckSelection())
@@ -72,26 +89,35 @@ public class ControllerManager : MonoBehaviour {
     }
 
     [SerializeField] AC.ActionList actionForBack;
+    [SerializeField] AC.ActionListAsset actionAssetForBack;
     public void OnBack() {
         if (CheckSelection())
             return;
         if (actionForBack != null)
             actionForBack.Interact();
+        else if (actionAssetForBack != null)
+            actionAssetForBack.Interact();
     }
 
     [SerializeField] AC.ActionList actionForEscape;
+    [SerializeField] AC.ActionListAsset actionAssetForEscape;
     public void OnEscape() {
         if (CheckSelection())
             return;
         if (actionForEscape != null)
             actionForEscape.Interact();
+        else if (actionAssetForEscape != null)
+            actionAssetForEscape.Interact();
     }
 
     [SerializeField] AC.ActionList actionForMap;
-    public void OnMap() {
+    [SerializeField] AC.ActionListAsset actionAssetForMap;
+        public void OnMap() {
         if (CheckSelection())
             return;
         if (actionForMap != null)
             actionForEscape.Interact();
+        else if (actionAssetForMap != null)
+            actionAssetForMap.Interact();
     }
 }
